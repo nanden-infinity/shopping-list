@@ -24,8 +24,12 @@ function addItem(e) {
 }
 // Remove Item in to the DOM
 function removeItem(e) {
-  if (e.target.classList.contains("fa-solid"))
-    if (confirm("Are you sure?")) e.target.closest("li").remove();
+  if (e.target.classList.contains("fa-solid")) {
+    if (confirm("Are you sure?")) {
+      e.target.closest("li").remove();
+      ckeckUI();
+    }
+  }
 }
 function clearListItem(e) {
   // Estudar esta parte
