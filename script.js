@@ -7,11 +7,17 @@ const clearBtn = document.getElementById("clear");
 function displayItems() {
   const itemsFromStorage = getItemsFromStorage();
   itemsFromStorage.forEach((item) => addItemToDOM(item));
+  ckeckUI();
 }
 
 function onAddItemSubmit(e) {
   e.preventDefault();
-  const newItem = itemInput.value;
+  let newItem = itemInput.value;
+  newItem = newItem
+    .split(" ")
+    .map((text) => text[0].toUpperCase() + text.slice(1).toLowerCase())
+    .join(" ");
+
   if (newItem === "") {
     alert("Please enter");
     return;
@@ -54,6 +60,7 @@ function clearListItem() {
   }
   // Opcao Moderna JS
   // itemList.innerHTML = "";
+  localStorage.clear("items");
   ckeckUI();
 }
 
