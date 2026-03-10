@@ -3,17 +3,18 @@ const itemInput = document.getElementById("item-input");
 const inputFilter = document.getElementById("filter");
 const itemList = document.getElementById("item-list");
 const clearBtn = document.getElementById("clear");
-
+const formBtn = itemFrom.querySelector(".btn");
+let isEditMode = false;
 function displayItems() {
   const itemsFromStorage = getItemsFromStorage();
   itemsFromStorage.forEach((item) => addItemToDOM(item));
-  ckeckUI();
+  checkUI();
 }
 
 function onAddItemSubmit(e) {
   e.preventDefault();
-  let newItem = itemInput.value;
-
+  let newItem = itemInput.value.trim();
+  // Validate Input Value
   if (newItem === "") {
     alert("Please enter");
     return;
@@ -22,12 +23,21 @@ function onAddItemSubmit(e) {
     .split(" ")
     .map((text) => text[0].toUpperCase() + text.slice(1).toLowerCase())
     .join(" ");
+
+  // Check for Edit Mode
+  if (isEditMode) {
+    const itemToEdit = document.querySelector(".edit-mode");
+    removeItemFromStorage(itemToEdit.textContent);
+    itemToEdit.classList.remove("edit-mode");
+    itemToEdit.remove();
+    isEditMode = false;
+  }
   //   Create li Item DOM element
   addItemToDOM(newItem);
   // Add item to local storage
   addItemStorage(newItem);
 
-  ckeckUI();
+  checkUI();
   itemInput.value = "";
 }
 
@@ -43,13 +53,58 @@ function getItemsFromStorage() {
 
   return itemsFromStorage;
 }
+
+function onClickItem(e) {
+  const target = e.target;
+  if (target.classList.contains("fa-solid")) {
+    removeItem(target.closest("li"));
+  } else {
+    setItemToEdit(target);
+  }
+}
+
+// Edit Item
+function setItemToEdit(item) {
+  isEditMode = true;
+  itemList
+    .querySelectorAll(".edit-mode")
+    .forEach((i) => i.classList.remove("edit-mode"));
+
+  item.classList.add("edit-mode");
+
+  formBtn.innerHTML = '   <i class="fa-solid fa-pen"></i> Update Item';
+ formBtn.style.backgroundColor = "#228B22"
+  itemInput.value = item.firstChild.textContent;
+  console.log();
+}
+
+function removeItem(item) {
+  if (confirm("Are you sure?")) {
+    // Remove item from DOM
+    item.remove();
+
+    // Remove item from storage
+    removeItemFromStorage(item.textContent);
+
+    checkUI();
+  }
+}
+
+function removeItemFromStorage(item) {
+  let itemsFromStorage = getItemsFromStorage();
+
+  // Filter out item to be removed
+  itemsFromStorage = itemsFromStorage.filter((i) => i !== item);
+
+  // Re-set to localstorage
+  localStorage.setItem("items", JSON.stringify(itemsFromStorage));
+}
+
 // Remove Item in to the DOM
-function removeItem(e) {
-  if (e.target.classList.contains("fa-solid")) {
-    if (confirm("Are you sure?")) {
-      e.target.closest("li").remove();
-      ckeckUI();
-    }
+function removeItem(item) {
+  if (confirm("Are you sure?")) {
+    item.remove();
+    checkUI();
   }
 }
 
@@ -60,8 +115,8 @@ function clearListItem() {
   }
   // Opcao Moderna JS
   // itemList.innerHTML = "";
-  localStorage.clear("items");
-  ckeckUI();
+  localStorage.removeItem("items");
+  checkUI();
 }
 
 function filterItem(e) {
@@ -86,7 +141,7 @@ function filterItem(e) {
   });
 }
 
-function ckeckUI() {
+function checkUI() {
   const items = itemList.querySelectorAll("li");
   if (items.length === 0) {
     inputFilter.style.display = "none";
@@ -95,6 +150,9 @@ function ckeckUI() {
     inputFilter.style.display = "block";
     clearBtn.style.display = "block";
   }
+  formBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Add Item';
+  formBtn.style.backgroundColor = '#333'
+  isEditMode = false;
 }
 
 function addItemToDOM(item) {
@@ -105,10 +163,12 @@ function addItemToDOM(item) {
 
   // Add li the DOM
   setTimeout(() => {
-  itemList.appendChild(li)
-}, Math.random() * 100)
+    itemList.appendChild(li);
+    itemInput.value = "";
+    checkUI();
+  }, Math.random() * 1000);
   // Eddit Item
-  editItem();
+
   // addItemStorage(item);
 }
 
@@ -137,23 +197,6 @@ function createIcon(classes) {
   return icon;
 }
 
-function editItem() {
-  const listItems = document.querySelectorAll("ul li");
-  const test = Array.from(listItems).length !== 0;
-  if (test) {
-    listItems.forEach((element) =>
-      element.addEventListener("click", editElement),
-    );
-  }
-}
-
-function editElement(e) {
-  //  const isTure = (e.target.tagName === "LI")
-  //  if(isTure){
-  //   console.log(  itemInput.value = e.target.firstChild.textContent)
-  //  }
-  //  e.target.textContent =  itemInput.value
-}
 // ADD Item into the DOM
 
 // itemList.innerHTML = localStorage.getItem("item");
@@ -161,11 +204,11 @@ function editElement(e) {
 // Event Listeners
 function init() {
   itemFrom.addEventListener("submit", onAddItemSubmit);
-  itemList.addEventListener("click", removeItem);
+  itemList.addEventListener("click", onClickItem);
   clearBtn.addEventListener("click", clearListItem);
   inputFilter.addEventListener("input", filterItem);
   document.addEventListener("DOMContentLoaded", displayItems);
-  ckeckUI();
+  checkUI();
 }
 // OCultando UI filter Input e btn Clear
 init();
