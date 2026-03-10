@@ -13,15 +13,15 @@ function displayItems() {
 function onAddItemSubmit(e) {
   e.preventDefault();
   let newItem = itemInput.value;
-  newItem = newItem
-    .split(" ")
-    .map((text) => text[0].toUpperCase() + text.slice(1).toLowerCase())
-    .join(" ");
 
   if (newItem === "") {
     alert("Please enter");
     return;
   }
+  newItem = newItem
+    .split(" ")
+    .map((text) => text[0].toUpperCase() + text.slice(1).toLowerCase())
+    .join(" ");
   //   Create li Item DOM element
   addItemToDOM(newItem);
   // Add item to local storage
@@ -104,7 +104,11 @@ function addItemToDOM(item) {
   li.appendChild(button);
 
   // Add li the DOM
-  itemList.appendChild(li);
+  setTimeout(() => {
+  itemList.appendChild(li)
+}, Math.random() * 100)
+  // Eddit Item
+  editItem();
   // addItemStorage(item);
 }
 
@@ -133,15 +137,35 @@ function createIcon(classes) {
   return icon;
 }
 
+function editItem() {
+  const listItems = document.querySelectorAll("ul li");
+  const test = Array.from(listItems).length !== 0;
+  if (test) {
+    listItems.forEach((element) =>
+      element.addEventListener("click", editElement),
+    );
+  }
+}
+
+function editElement(e) {
+  //  const isTure = (e.target.tagName === "LI")
+  //  if(isTure){
+  //   console.log(  itemInput.value = e.target.firstChild.textContent)
+  //  }
+  //  e.target.textContent =  itemInput.value
+}
 // ADD Item into the DOM
 
 // itemList.innerHTML = localStorage.getItem("item");
 
 // Event Listeners
-itemFrom.addEventListener("submit", onAddItemSubmit);
-itemList.addEventListener("click", removeItem);
-clearBtn.addEventListener("click", clearListItem);
-inputFilter.addEventListener("input", filterItem);
-document.addEventListener("DOMContentLoaded", displayItems);
+function init() {
+  itemFrom.addEventListener("submit", onAddItemSubmit);
+  itemList.addEventListener("click", removeItem);
+  clearBtn.addEventListener("click", clearListItem);
+  inputFilter.addEventListener("input", filterItem);
+  document.addEventListener("DOMContentLoaded", displayItems);
+  ckeckUI();
+}
 // OCultando UI filter Input e btn Clear
-ckeckUI();
+init();
