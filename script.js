@@ -4,23 +4,38 @@ const inputFilter = document.getElementById("filter");
 const itemList = document.getElementById("item-list");
 const clearBtn = document.getElementById("clear");
 
-function addItem(e) {
+function displayItems() {
+  const itemsFromStorage = getItemsFromStorage();
+  itemsFromStorage.forEach((item) => addItemToDOM(item));
+}
+
+function onAddItemSubmit(e) {
   e.preventDefault();
   const newItem = itemInput.value;
   if (newItem === "") {
     alert("Please enter");
     return;
   }
-  //   Create li Item
-  const li = document.createElement("li");
-  li.appendChild(document.createTextNode(newItem));
-  const button = createButton("remove-item btn-link text-red");
-  li.appendChild(button);
+  //   Create li Item DOM element
+  addItemToDOM(newItem);
+  // Add item to local storage
+  addItemStorage(newItem);
 
-  // Add li the DOM
-  itemList.appendChild(li);
-  itemInput.value = "";
   ckeckUI();
+  itemInput.value = "";
+}
+
+function getItemsFromStorage() {
+  let itemsFromStorage;
+
+  if (localStorage.getItem("items") === null) {
+    itemsFromStorage = [];
+  } else {
+    itemsFromStorage = JSON.parse(localStorage.getItem("items"));
+  }
+  // Add new Item to array
+
+  return itemsFromStorage;
 }
 // Remove Item in to the DOM
 function removeItem(e) {
@@ -31,12 +46,14 @@ function removeItem(e) {
     }
   }
 }
-function clearListItem(e) {
+
+function clearListItem() {
   // Estudar esta parte
-  // while (itemList.firstChild) {
-  //   itemList.removeChild(itemList.firstChild);
-  // }
-  itemList.innerHTML = "";
+  while (itemList.firstChild) {
+    itemList.removeChild(itemList.firstChild);
+  }
+  // Opcao Moderna JS
+  // itemList.innerHTML = "";
   ckeckUI();
 }
 
@@ -44,13 +61,21 @@ function filterItem(e) {
   const inputText = e.target.value.toLowerCase();
   // console.log(inputText);/*  */
   const items = itemList.querySelectorAll("li");
-  Array.from(items).filter((item) => {
-    const isTrue = item.textContent.toLowerCase().includes(inputText);
-    if (isTrue) {
-      item.style.display = "flex";
-    } else {
-      item.style.display = "none";
-    }
+  // Array.from(items).filter((item) => {
+  //   const isTrue = item.textContent.toLowerCase().includes(inputText);
+  //   if (isTrue) {
+  //     item.style.display = "flex";
+  //   } else {
+  //     item.style.display = "none";
+  //   }
+  // });
+
+  items.forEach((item) => {
+    const itemName = item.firstChild.textContent
+      .toLowerCase()
+      .indexOf(inputText);
+    if (itemName != -1) item.style.display = "flex";
+    else item.style.display = "none";
   });
 }
 
@@ -64,6 +89,29 @@ function ckeckUI() {
     clearBtn.style.display = "block";
   }
 }
+
+function addItemToDOM(item) {
+  const li = document.createElement("li");
+  li.appendChild(document.createTextNode(item));
+  const button = createButton("remove-item btn-link text-red");
+  li.appendChild(button);
+
+  // Add li the DOM
+  itemList.appendChild(li);
+  // addItemStorage(item);
+}
+
+function addItemStorage(item) {
+  const itemsFromStorage = getItemsFromStorage();
+
+  // Add new Item to array
+
+  itemsFromStorage.push(item);
+
+  // To convert JSON String to set localStorage
+  localStorage.setItem("items", JSON.stringify(itemsFromStorage));
+}
+
 function createButton(classes) {
   const button = document.createElement("button");
   button.className = classes;
@@ -77,10 +125,16 @@ function createIcon(classes) {
   icon.className = classes;
   return icon;
 }
+
+// ADD Item into the DOM
+
+// itemList.innerHTML = localStorage.getItem("item");
+
 // Event Listeners
-itemFrom.addEventListener("submit", addItem);
+itemFrom.addEventListener("submit", onAddItemSubmit);
 itemList.addEventListener("click", removeItem);
 clearBtn.addEventListener("click", clearListItem);
 inputFilter.addEventListener("input", filterItem);
+document.addEventListener("DOMContentLoaded", displayItems);
 // OCultando UI filter Input e btn Clear
 ckeckUI();
