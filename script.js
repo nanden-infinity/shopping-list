@@ -64,7 +64,7 @@ function onClickItem(e) {
   const target = e.target;
   if (target.classList.contains("fa-solid")) {
     removeItem(target.closest("li"));
-    itemInput.value = ''
+    itemInput.value = "";
   } else {
     setItemToEdit(target);
   }
@@ -72,8 +72,7 @@ function onClickItem(e) {
 // Prevent Duplicated item
 function checkIfItemExists(item) {
   const itemsFromStorage = getItemsFromStorage();
-  return itemsFromStorage.includes(item)
- 
+  return itemsFromStorage.includes(item);
 }
 // Edit Item
 function setItemToEdit(item) {
@@ -98,10 +97,9 @@ function removeItem(item) {
     item.remove();
     // Remove item from storage
     removeItemFromStorage(item.textContent);
-    
+
     checkUI();
   }
-  
 }
 
 function removeItemFromStorage(item) {
@@ -115,7 +113,6 @@ function removeItemFromStorage(item) {
 }
 
 // Remove Item in to the DOM
-
 
 function clearListItem() {
   // Estudar esta parte
