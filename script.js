@@ -115,12 +115,7 @@ function removeItemFromStorage(item) {
 }
 
 // Remove Item in to the DOM
-function removeItem(item) {
-  if (confirm("Are you sure?")) {
-    item.remove();
-    checkUI();
-  }
-}
+
 
 function clearListItem() {
   // Estudar esta parte
